@@ -3,24 +3,27 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17  # AWS ka Java 17 version
-  
+      java: corretto17 # Java 17 environment
+      
   pre_build:
     commands:
-      - echo "Maven version check kar rahe hain..."
-      - mvn -version
-
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      # Docker ko AWS ECR se connect karna
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <YOUR_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
+      
   build:
     commands:
-      - echo "Build start ho raha hai..."
-      - mvn clean package  # Ye command project ko build karegi aur JAR banayegi
+      - echo Build started on `date`
+      - echo Building the Java project...
+      - mvn clean package
+      
+      - echo Building the Docker image...
+      - docker build -t my-demo-app-repo .
+      - docker tag my-demo-app-repo:latest <YOUR_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/my-demo-app-repo:latest
 
   post_build:
     commands:
-      - echo "Build complete ho gaya!"
-
-artifacts:
-  files:
-    - target/*.jar  # Pipeline ke next stage (Deploy) ke liye ye file save hogi
-    - appspec.yml   # Agar aap AWS CodeDeploy use kar rahe hain (Optional)
-  discard-paths: yes
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push <YOUR_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/my-demo-app-repo:latest
