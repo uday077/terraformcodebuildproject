@@ -1,0 +1,26 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17  # AWS ka Java 17 version
+  
+  pre_build:
+    commands:
+      - echo "Maven version check kar rahe hain..."
+      - mvn -version
+
+  build:
+    commands:
+      - echo "Build start ho raha hai..."
+      - mvn clean package  # Ye command project ko build karegi aur JAR banayegi
+
+  post_build:
+    commands:
+      - echo "Build complete ho gaya!"
+
+artifacts:
+  files:
+    - target/*.jar  # Pipeline ke next stage (Deploy) ke liye ye file save hogi
+    - appspec.yml   # Agar aap AWS CodeDeploy use kar rahe hain (Optional)
+  discard-paths: yes
