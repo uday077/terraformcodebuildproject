@@ -1,0 +1,4 @@
+# .gitignore file me ye daal do
+*.tfstate
+*.tfstate.*
+.terraform/
