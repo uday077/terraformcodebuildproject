@@ -8,31 +8,24 @@ phases:
   pre_build:
     commands:
       - echo "Logging in to Amazon ECR..."
-      # Direct Login command (Quotes ke sath)
       - "aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 082972943693.dkr.ecr.ap-south-1.amazonaws.com"
 
   build:
     commands:
       - echo "Build started on `date`"
-      
       - echo "1. Generating JAR file..."
       - "mvn clean package"
       
       - echo "2. Building Docker Image..."
-      # Pehle simple tag ke sath build karenge
       - "docker build -t uday-ecr ."
       
-      # Fir AWS ECR ke liye tag karenge
       - "docker tag uday-ecr:latest 082972943693.dkr.ecr.ap-south-1.amazonaws.com/uday-ecr:latest"
 
   post_build:
     commands:
       - echo "Build completed on `date`"
       - echo "3. Pushing Docker Image to ECR..."
-      
-      # Finally upload kar rahe hain
       - "docker push 082972943693.dkr.ecr.ap-south-1.amazonaws.com/uday-ecr:latest"
-      
       - echo "Success! Image Successfully Pushed."
 
 artifacts:
